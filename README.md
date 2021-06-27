@@ -1,5 +1,6 @@
 # Number Anomaly Detector
-# Author: Sebastian Garcia (eldraco@gmail.com, @eldracote)
+
+- Author: Sebastian Garcia (eldraco@gmail.com, @eldracote)
 
 An anomaly detector for numbers. It is completely automated, so you should just give the file with the numbers, one per line.
 
@@ -8,7 +9,9 @@ An anomaly detector for numbers. It is completely automated, so you should just 
 Please install the following dependencies:
 - pyod: PyOD is a comprehensive and scalable Python toolkit for detecting outlying objects in multivariate data. 
 
-    pip install zat pyod
+```
+pip install zat pyod
+```
 
 ## Usage
     $ ./number_anomaly_detector.py -f test-numbers.txt

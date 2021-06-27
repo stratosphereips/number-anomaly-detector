@@ -14,15 +14,17 @@ pip install zat pyod
 ```
 
 ## Usage
-    $ ./number_anomaly_detector.py -f test-numbers.txt
-    Simple Number Anomaly Detector. Version: 0.1
-    Author: Sebastian Garcia (eldraco@gmail.com)
-    
-    Top anomalies
-    values    score
-    35345 3.129754
-    24562 1.766415
-        2 1.338806
+```
+$ ./number_anomaly_detector.py -f test-numbers.txt
+Simple Number Anomaly Detector. Version: 0.1
+Author: Sebastian Garcia (eldraco@gmail.com)
+
+Top anomalies
+values    score
+35345 3.129754
+24562 1.766415
+2 1.338806
+```
 
 # Performace
 Using the PCA model, is capable of training and testing 1 million numbers in 0.38 seconds

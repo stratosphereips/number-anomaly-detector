@@ -12,7 +12,7 @@ Please install the following dependencies:
 - pyod: PyOD is a comprehensive and scalable Python toolkit for detecting outlying objects in multivariate data. 
 
 ```
-pip install zat pyod
+pip install pyod
 ```
 
 ## Usage

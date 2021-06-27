@@ -23,6 +23,7 @@ from pyod.models.pca import PCA
 # from pyod.models.knn import KNN   # kNN detector
 import argparse
 import warnings
+import sys
 
 
 # This horrible hack is only to stop sklearn from printing those warnings
@@ -33,15 +34,39 @@ def warn(*args, **kwargs):
 warnings.warn = warn
 
 
-def detect(file, amountanom, realtime):
+def detect(input_data, amountanom, realtime, window_size):
     """
-    Function to apply a very simple anomaly detector
-    amountanom: The top number of anomalies we want to print
-    realtime: If we want to read the conn.log file in real time (not working)
-    """
+    Parent function to deal with real time or not
 
-    # Create a Pandas dataframe from the conn.log
-    df = pd.read_csv(file, names=['values'])
+    realtime: If we want to read the conn.log file in real time (not working)
+    input_data: can be a file to open of STDIN
+    """
+    if not realtime:
+        # Create a Pandas dataframe from the conn.log
+        df = pd.read_csv(input_data, names=['values'])
+        detect_numbers(df, amountanom)
+    elif realtime:
+        # Read in groups of 'window_size' width and train and test on them
+        read_lines = 0
+        lines = []
+        for line in sys.stdin:
+            line = line.strip()
+            lines.append(line)
+            read_lines += 1
+            if read_lines == window_size:
+                df = pd.DataFrame(lines, columns=['values'])
+                detect_numbers(df, amountanom)
+                read_lines = 0
+        # Capture the last batch
+        df = pd.DataFrame(lines, columns=['values'])
+        detect_numbers(df, amountanom)
+
+def detect_numbers(df, amountanom):
+    """
+    Function to apply a very simple anomaly detector to a set of numbers given as a pandas dataframe
+    amountanom: The top number of anomalies we want to print
+    df: input dataframe with numbers
+    """
 
     # Replace the rows without data (with '-') with 0.
     df['values'].replace('-', '0', inplace=True)
@@ -143,9 +168,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbose', help='Amount of verbosity. This shows more info about the results.', action='store', required=False, type=int)
     parser.add_argument('-e', '--debug', help='Amount of debugging. This shows inner information about the program.', action='store', required=False, type=int)
-    parser.add_argument('-f', '--file', help='Path to the input file to read.', required=True)
+    parser.add_argument('-f', '--file', help='Path to the input file to read.', required=False)
     parser.add_argument('-a', '--amountanom', help='Amount of anomalies to show.', required=False, default=10, type=int)
-    parser.add_argument('-R', '--realtime', help='Read from stdin.', required=False, type=bool, default=False)
+    parser.add_argument('-R', '--realtime', help='Read from stdin.', required=False, action='store_true',  default=False)
+    parser.add_argument('-w', '--window_size', help='Width of the groups of numbers to read and detect if using STDIN.', required=False, type=bool, default=10)
     args = parser.parse_args()
 
-    detect(args.file, args.amountanom, args.realtime)
+    detect(args.file, args.amountanom, args.realtime, window_size=args.window_size)

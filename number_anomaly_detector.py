@@ -24,6 +24,8 @@ from pyod.models.pca import PCA
 import argparse
 import warnings
 import sys
+import fileinput
+
 
 
 # This horrible hack is only to stop sklearn from printing those warnings
@@ -34,32 +36,44 @@ def warn(*args, **kwargs):
 warnings.warn = warn
 
 
-def detect(input_data, amountanom, realtime, window_size):
+def detect(input_data, amountanom, window_size):
     """
     Parent function to deal with real time or not
 
-    realtime: If we want to read the conn.log file in real time (not working)
     input_data: can be a file to open of STDIN
     """
-    if not realtime:
+    if args.verbose:
+        print('Detecting')
+    if input_data:
+        if args.verbose:
+            print('By file')
         # Create a Pandas dataframe from the conn.log
         df = pd.read_csv(input_data, names=['values'])
         detect_numbers(df, amountanom)
-    elif realtime:
+    else:
+        if args.verbose:
+            print('Realtime')
         # Read in groups of 'window_size' width and train and test on them
         read_lines = 0
         lines = []
-        for line in sys.stdin:
-            line = line.strip()
-            lines.append(line)
-            read_lines += 1
-            if read_lines == window_size:
-                df = pd.DataFrame(lines, columns=['values'])
-                detect_numbers(df, amountanom)
-                read_lines = 0
-        # Capture the last batch
-        df = pd.DataFrame(lines, columns=['values'])
-        detect_numbers(df, amountanom)
+        try:
+            for line in iter(sys.stdin.readline, b''):
+                if line:
+                    line = line.strip()
+                    lines.append(line)
+                    read_lines += 1
+                    if read_lines == window_size:
+                        print(f'Read new numbers. Processing...')
+                        df = pd.DataFrame(lines, columns=['values'])
+                        detect_numbers(df, amountanom)
+                        read_lines = 0
+                else:
+                    break
+            # Capture the last batch
+            df = pd.DataFrame(lines, columns=['values'])
+            detect_numbers(df, amountanom)
+        except KeyboardInterrupt:
+            sys.stdout.flush()
 
 def detect_numbers(df, amountanom):
     """
@@ -170,8 +184,7 @@ if __name__ == '__main__':
     parser.add_argument('-e', '--debug', help='Amount of debugging. This shows inner information about the program.', action='store', required=False, type=int)
     parser.add_argument('-f', '--file', help='Path to the input file to read.', required=False)
     parser.add_argument('-a', '--amountanom', help='Amount of anomalies to show.', required=False, default=10, type=int)
-    parser.add_argument('-R', '--realtime', help='Read from stdin.', required=False, action='store_true',  default=False)
     parser.add_argument('-w', '--window_size', help='Width of the groups of numbers to read and detect if using STDIN.', required=False, type=bool, default=10)
     args = parser.parse_args()
 
-    detect(args.file, args.amountanom, args.realtime, window_size=args.window_size)
+    detect(args.file, args.amountanom, window_size=args.window_size)

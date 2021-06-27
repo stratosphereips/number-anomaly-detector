@@ -2,7 +2,9 @@
 
 - Author: Sebastian Garcia (eldraco@gmail.com, @eldracote)
 
-An anomaly detector for numbers. It is completely automated, so you should just give the file with the numbers, one per line.
+An anomaly detector for numbers. 
+You can give a file with one number per line and it will print the anomalies.
+You can also give numbers in the STDIN and it will print the anomalies every X amount of numbers.
 
 ## Dependencies
 
@@ -14,6 +16,8 @@ pip install zat pyod
 ```
 
 ## Usage
+
+### From a file
 ```
 $ ./number_anomaly_detector.py -f test-numbers.txt
 Simple Number Anomaly Detector. Version: 0.1
@@ -24,6 +28,29 @@ values    score
 35345 3.129754
 24562 1.766415
 2 1.338806
+```
+
+### From STDIN
+```
+$ cat test-numbers.txt | ./number_anomaly_detector.py -R
+Simple Number Anomaly Detector. Version: 0.1
+Author: Sebastian Garcia (eldraco@gmail.com)
+
+Top anomalies
+values    score
+ 35345 1.999886
+
+Top anomalies
+values    score
+ 35345 3.331550
+     2 1.284752
+
+Top anomalies
+values    score
+ 35345 3.129754
+ 24562 1.766415
+     2 1.338806
+
 ```
 
 # Performace

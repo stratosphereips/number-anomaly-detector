@@ -32,7 +32,7 @@ values    score
 
 ### From STDIN
 ```
-$ cat test-numbers.txt | ./number_anomaly_detector.py -R
+$ cat test-numbers.txt | ./number_anomaly_detector.py
 Simple Number Anomaly Detector. Version: 0.1
 Author: Sebastian Garcia (eldraco@gmail.com)
 

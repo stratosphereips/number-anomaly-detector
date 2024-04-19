@@ -55,3 +55,11 @@ values    score
 
 # Performace
 Using the PCA model, is capable of training and testing 1 million numbers in 0.38 seconds
+
+# Docker
+
+To run the tool using Docker use our Docker Hub image:
+
+```bash
+docker run stratosphereips/numberanomalydetector:latest number_anomaly_detector.py -f test-numbers.txt
+```
